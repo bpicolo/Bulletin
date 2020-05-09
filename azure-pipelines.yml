@@ -6,6 +6,11 @@
 trigger:
 - master
 
+pr:
+  branches:
+    include:
+      - '*'
+
 pool:
   vmImage: ubuntu-16.04
 
@@ -14,27 +19,49 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-
 steps:
+- task: UseGitVersion@5
+  displayName: gitversion
+  inputs:
+    versionSpec: '5.x'
+    updateAssemblyInfo: false
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet restore'
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'build'
+  inputs:
+    projects: Bulletin.sln
+    arguments: '--configuration $(BuildConfiguration) /p:Version=$(GitVersion.NuGetVersion)'
+    versioningScheme: byBuildNumber
+
+- task: CopyFiles@2
+  displayName: 'copy generated nuget packages'
+  inputs:
+    SourceFolder: src
+    Contents: '**/*.nupkg'
+    TargetFolder: ' $(Build.ArtifactStagingDirectory)'
+    CleanTargetFolder: true
+    OverWrite: true
+    flattenFolders: true
+
 - task: DotNetCoreCLI@2
   displayName: 'Unit Tests'
   continueOnError: false
   inputs:
     command: test
     projects: Bulletin.sln
+    arguments: --collect:"XPlat Code Coverage"
 
-- task: DotNetCoreCLI@2
-  displayName: 'build all'
+- task: NuGetCommand@2
+  displayName: publish
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
   inputs:
-    projects: Bulletin.sln
-    arguments: '-c release /p:Version=$(v)'
-
-- task: CopyFiles@2
-  displayName: 'copy generated nugets'
-  inputs:
-    SourceFolder: src
-    Contents: '**/*.nupkg'
-    TargetFolder: ' $(build.artifactstagingdirectory)'
-    CleanTargetFolder: true
-    OverWrite: true
-    flattenFolders: true
+    command: push
+    nuGetFeedType: external
+    publishFeedCredentials: 'Bulletin Nuget'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
