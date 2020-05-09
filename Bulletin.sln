@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bulletin", "src\Bulletin\Bulletin.csproj", "{8E6FB669-B7AE-454E-AF17-9615B93E8E4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bulletin.FunctionalTests", "src\Bulletin.FunctionalTests\Bulletin.FunctionalTests.csproj", "{7DE95DFE-40ED-46FF-BFBB-DAB7FD2AF159}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bulletin.Tests", "test\Bulletin.Tests\Bulletin.Tests.csproj", "{9DFF24CC-8F55-4C55-9993-66DD47DC5245}"
 EndProject
 Global
@@ -16,10 +14,6 @@ Global
 		{8E6FB669-B7AE-454E-AF17-9615B93E8E4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E6FB669-B7AE-454E-AF17-9615B93E8E4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E6FB669-B7AE-454E-AF17-9615B93E8E4F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7DE95DFE-40ED-46FF-BFBB-DAB7FD2AF159}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7DE95DFE-40ED-46FF-BFBB-DAB7FD2AF159}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7DE95DFE-40ED-46FF-BFBB-DAB7FD2AF159}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7DE95DFE-40ED-46FF-BFBB-DAB7FD2AF159}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9DFF24CC-8F55-4C55-9993-66DD47DC5245}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9DFF24CC-8F55-4C55-9993-66DD47DC5245}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DFF24CC-8F55-4C55-9993-66DD47DC5245}.Release|Any CPU.ActiveCfg = Release|Any CPU

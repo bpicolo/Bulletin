@@ -16,12 +16,6 @@ namespace Bulletin.Tests
         }
 
         [Fact]
-        public Task TestAttachToStorage()
-        {
-
-        }
-
-        [Fact]
         public void TestAbsoluteUrlsGeneratedWithDefaultPrefix()
         {
             var board = BulletinBoardFactory.InMemory("", new UrlOptions());
