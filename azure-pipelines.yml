@@ -14,21 +14,37 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
+
 steps:
-- task: NuGetToolInstaller@1
+- script: echo "##vso[build.updatebuildnumber]$(v)"
+- task: DotNetCoreCLI@2
+  displayName: 'Unit Tests'
+  continueOnError: false
+  inputs:
+    command: test
+    projects: Bulletin.sln
+
+- task: DotNetCoreCLI@2
+  displayName: 'build all'
+  inputs:
+    projects: Bulletin.sln
+    arguments: '-c release /p:Version=$(v)'
+
+- task: CopyFiles@2
+  displayName: 'copy generated nugets'
+  inputs:
+    SourceFolder: src
+    Contents: '**/*.nupkg'
+    TargetFolder: ' $(build.artifactstagingdirectory)'
+    CleanTargetFolder: true
+    OverWrite: true
+    flattenFolders: true
 
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
 
-- task: VSBuild@1
+- task: PublishBuildArtifacts@1
+  displayName: 'publish nugets as artifacts'
   inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    ArtifactName: nuget
