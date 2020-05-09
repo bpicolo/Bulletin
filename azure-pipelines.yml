@@ -39,12 +39,3 @@ steps:
     CleanTargetFolder: true
     OverWrite: true
     flattenFolders: true
-
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'publish nugets as artifacts'
-  inputs:
-    ArtifactName: nuget
