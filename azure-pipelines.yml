@@ -16,7 +16,6 @@ variables:
 
 
 steps:
-- script: echo "##vso[build.updatebuildnumber]$(v)"
 - task: DotNetCoreCLI@2
   displayName: 'Unit Tests'
   continueOnError: false
