@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Bulletin.EFCore;
 using Bulletin.Models;
-using Bulletin.Storages;
-using Microsoft.Extensions.FileProviders;
 
 namespace Bulletin
 {
@@ -14,7 +12,6 @@ namespace Bulletin
     {
         private readonly string _routePrefix;
         private readonly IBulletinDbContext _dbContext;
-        private readonly Uploader _uploader;
         private readonly BulletinBoardOptions _options;
 
         public BulletinBoard(IBulletinDbContext dbContext, BulletinBoardOptions options)
@@ -22,7 +19,6 @@ namespace Bulletin
 
             _options = options;
             _dbContext = dbContext;
-            _uploader = new Uploader(options.Name, options.Storage.GetBlobStorage());
             _routePrefix = options.RoutePrefix != null ?
                 $"/{options.RoutePrefix}/{options.Name}".TrimEnd('/') :
                 $"/bulletin-static/{options.Name}".TrimEnd('/');
@@ -35,20 +31,24 @@ namespace Bulletin
 
         public async Task<Attachment> AttachAsync(FileStream file)
         {
-            var upload = await _uploader.Upload(file);
-            var mimetype = MimeMapping.MimeUtility.GetMimeMapping(upload.Extension);
+            var ext = Path.GetExtension(file.Name);
+            var mimetype = MimeMapping.MimeUtility.GetMimeMapping(ext);
 
-            var attachment = new Attachment()
+            var destination = GenerateUniqueStorageName(ext);
+            await _options.Storage.WriteAsync(destination, file);
+
+            var attachment = new Attachment
             {
                 Board = _options.Name,
-                Location = upload.Location,
+                Location = destination,
                 ContentType = mimetype,
-                Filename = Path.GetFileName(file.Name),
+                OriginalFilename = Path.GetFileName(file.Name),
                 Checksum = ShaSum(file),
                 CreatedAt = new DateTime(),
                 SizeInBytes = file.Length,
                 Metadata = null
             };
+
             await _dbContext.Attachments.AddAsync(attachment);
             await _dbContext.SaveChangesAsync();
 
@@ -68,6 +68,15 @@ namespace Bulletin
             }
 
             return sb.ToString();
+        }
+
+        private static string GenerateUniqueStorageName(string ext)
+        {
+            var random = Guid.NewGuid().ToString();
+
+            return Path.Combine(
+                random.Substring(0, 2), random.Substring(2, 2),
+                $"{random}{ext}");
         }
     }
 }

@@ -1,3 +1,6 @@
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 using Storage.Net;
 using Storage.Net.Blobs;
@@ -17,6 +20,13 @@ namespace Bulletin.Storages
 
         public UrlOptions UrlOptions() => _urlOptions;
 
-        IBlobStorage IStorage.GetBlobStorage() => _storage;
+        public Task WriteAsync(
+            string fullPath,
+            Stream dataStream,
+            bool append = false,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return _storage.WriteAsync(fullPath, dataStream, append, cancellationToken);
+        }
     }
 }
