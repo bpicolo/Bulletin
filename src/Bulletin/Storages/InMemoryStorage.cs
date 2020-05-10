@@ -9,7 +9,7 @@ namespace Bulletin.Storages
         private readonly IBlobStorage _storage;
         private readonly UrlOptions _urlOptions;
 
-        internal InMemoryStorage(UrlOptions urlOptions)
+        public InMemoryStorage(UrlOptions urlOptions)
         {
             _urlOptions = urlOptions;
             _storage = StorageFactory.Blobs.InMemory();

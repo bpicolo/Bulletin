@@ -37,10 +37,5 @@ namespace Bulletin.Models
 
         public string Metadata { get; set; }
 
-        public static void OnModelCreating(ModelBuilder builder)
-        {
-            builder.Entity<Attachment>()
-                .HasIndex(a => a.Location);
-        }
     }
 }

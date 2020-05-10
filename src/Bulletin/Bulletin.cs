@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Bulletin.EFCore;
 using Bulletin.Models;
 using Bulletin.Storages;
 
@@ -7,19 +8,28 @@ namespace Bulletin
 {
     public class Bulletin : IBulletin
     {
-        private readonly Dictionary<string, BulletinBoard> _boards;
+        private readonly IBulletinDbContext _dbContext;
+        private readonly BulletinOptions _options;
 
-        internal Bulletin(Dictionary<string, BulletinBoard> boards)
+        internal Bulletin(IBulletinDbContext dbContext, BulletinOptions options)
         {
-            _boards = boards;
+            _options = options;
+            _dbContext = dbContext;
         }
 
         public IBulletinBoard GetBoard(string name)
-            =>  _boards[name] ?? throw new BulletinArgumentException($"No bulletin board named `{name}` is configured.");
+        {
+            if (!_options.BulletinBoardOptions.ContainsKey(name))
+            {
+                throw new BulletinArgumentException($"No bulletin board named `{name}` is configured.");
+            }
+
+            return new BulletinBoard(_dbContext, _options.BulletinBoardOptions[name]);
+        }
 
         public string AbsoluteUrlFor(Attachment attachment)
         {
-            if (!_boards.ContainsKey(attachment.Board))
+            if (!_options.BulletinBoardOptions.ContainsKey(attachment.Board))
             {
                 throw new BulletinArgumentException(
                     $"Attachment {attachment.Id} is associated with bulletin board {attachment.Board} which is not registered");

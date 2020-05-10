@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Bulletin.EFCore;
 using Bulletin.Storages;
 
 namespace Bulletin
@@ -9,30 +10,28 @@ namespace Bulletin
 
     public class BulletinOptionsBuilder
     {
-        private readonly Dictionary<string, Tuple<IStorage, BulletinBoardOptions>> _boards = new Dictionary<string, Tuple<IStorage, BulletinBoardOptions>>();
+        private readonly Dictionary<string, BulletinBoardOptions> _boardOptions = new Dictionary<string, BulletinBoardOptions>();
         private static readonly Regex NameRe = new Regex(@"^[a-zA-Z0-9_-]+$");
 
-        public BulletinOptionsBuilder AddBoard(string name, IStorage storage, BulletinBoardOptions options)
+        public BulletinOptionsBuilder AddBoard(BulletinBoardOptions options)
         {
-            if (_boards.ContainsKey(name))
+            if (_boardOptions.ContainsKey(options.Name))
             {
-                throw new ArgumentException($"Board with name `{name}` already registered.");
+                throw new ArgumentException($"Board with name `{options.Name}` already registered.");
             }
 
-            if (!IsValidName(name))
+            if (!IsValidName(options.Name))
             {
-                throw new ArgumentException($"Bulletin board name must be url-path safe, got {name}");
+                throw new ArgumentException($"Bulletin board name must be url-path safe, got {options.Name}");
             }
 
-            _boards.Add(name, Tuple.Create(storage, options));
+            _boardOptions.Add(options.Name, options);
             return this;
         }
 
-        public Bulletin Create()
+        public BulletinOptions Create()
         {
-            return new Bulletin(_boards.ToDictionary(
-                k => k.Key,
-                k => new BulletinBoard(k.Key, k.Value.Item1, k.Value.Item2)));
+            return new BulletinOptions(_boardOptions);
         }
 
         private static bool IsValidName(string name)

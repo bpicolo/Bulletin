@@ -3,6 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Bulletin.EFCore;
 using Bulletin.Models;
 using Bulletin.Storages;
 using Microsoft.Extensions.FileProviders;
@@ -11,26 +12,25 @@ namespace Bulletin
 {
     public class BulletinBoard : IBulletinBoard
     {
-        private readonly string _name;
         private readonly string _routePrefix;
+        private readonly IBulletinDbContext _dbContext;
         private readonly Uploader _uploader;
         private readonly BulletinBoardOptions _options;
-        private readonly IStorage _storage;
 
-        public BulletinBoard(string name, IStorage storage, BulletinBoardOptions options = null)
+        public BulletinBoard(IBulletinDbContext dbContext, BulletinBoardOptions options)
         {
-            options ??= new BulletinBoardOptions();
 
-            _name = name;
             _options = options;
-            _storage = storage;
-            _uploader = new Uploader(_name, storage.GetBlobStorage());
-            _routePrefix = options.RoutePrefix != null ? $"/{options.RoutePrefix}/{_name}".TrimEnd('/') : $"/bulletin-static/{_name}".TrimEnd('/');
+            _dbContext = dbContext;
+            _uploader = new Uploader(options.Name, options.Storage.GetBlobStorage());
+            _routePrefix = options.RoutePrefix != null ?
+                $"/{options.RoutePrefix}/{options.Name}".TrimEnd('/') :
+                $"/bulletin-static/{options.Name}".TrimEnd('/');
         }
 
         public string AbsoluteUrlFor(Attachment attachment)
         {
-            return _storage.UrlOptions().GetAbsoluteUrl($"{_routePrefix}/{attachment.Location}");
+            return _options.Storage.UrlOptions().GetAbsoluteUrl($"{_routePrefix}/{attachment.Location}");
         }
 
         public async Task<Attachment> AttachAsync(FileStream file)
@@ -38,9 +38,9 @@ namespace Bulletin
             var upload = await _uploader.Upload(file);
             var mimetype = MimeMapping.MimeUtility.GetMimeMapping(upload.Extension);
 
-            return new Attachment()
+            var attachment = new Attachment()
             {
-                Board = _name,
+                Board = _options.Name,
                 Location = upload.Location,
                 ContentType = mimetype,
                 Filename = Path.GetFileName(file.Name),
@@ -49,6 +49,10 @@ namespace Bulletin
                 SizeInBytes = file.Length,
                 Metadata = null
             };
+            await _dbContext.Attachments.AddAsync(attachment);
+            await _dbContext.SaveChangesAsync();
+
+            return attachment;
         }
 
         private static string ShaSum(FileStream file)

@@ -1,12 +1,24 @@
 using System;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
+using Bulletin.EFCore;
 using Bulletin.Models;
+using Bulletin.Storages;
+using Moq;
 using Xunit;
 
 namespace Bulletin.Tests
 {
     public class BulletinBoardTest
     {
+
+        private readonly Mock<IBulletinDbContext> _mockContext;
+
+        public BulletinBoardTest()
+        {
+            _mockContext = new Mock<IBulletinDbContext>();
+        }
+
         private Attachment AttachmentStub()
         {
             return new Attachment()
@@ -15,10 +27,30 @@ namespace Bulletin.Tests
             };
         }
 
+
+        private BulletinBoard GetBoard(
+            string name,
+            string routePrefix = null,
+            UrlOptions urlOptions = null)
+        {
+            urlOptions ??= new UrlOptions();
+
+            var options = new BulletinBoardOptions(
+                name,
+                new InMemoryStorage(urlOptions));
+
+            if (routePrefix != null)
+            {
+                options.RoutePrefix = routePrefix;
+            }
+
+            return new BulletinBoard(_mockContext.Object, options);
+        }
+
         [Fact]
         public void TestAbsoluteUrlsGeneratedWithDefaultPrefix()
         {
-            var board = BulletinBoardFactory.InMemory("", new UrlOptions());
+            var board = GetBoard("");
 
             Assert.Equal(
                 "https://localhost:5001/bulletin-static/hello.jpg",
@@ -27,7 +59,7 @@ namespace Bulletin.Tests
 
         [Fact]
         public void TestHttpsUrlWithDefaultPortNotIncluded() {
-            var board = BulletinBoardFactory.InMemory("", new UrlOptions
+            var board = GetBoard("", urlOptions: new UrlOptions
             {
                 Scheme = "https",
                 Port = 443
@@ -40,7 +72,7 @@ namespace Bulletin.Tests
 
         [Fact]
         public void TestHttpUrlWithDefaultPortNotIncluded() {
-            var board = BulletinBoardFactory.InMemory("", new UrlOptions
+            var board = GetBoard("", urlOptions: new UrlOptions
             {
                 Scheme = "http",
                 Port = 80
@@ -54,10 +86,7 @@ namespace Bulletin.Tests
         [Fact]
         public void TestAbsoluteUrlWithCustomPrefix()
         {
-            var board = BulletinBoardFactory.InMemory("", bulletinBoardOptions: new BulletinBoardOptions
-            {
-                RoutePrefix ="my-custom-prefix"
-            });
+            var board = GetBoard("", routePrefix: "my-custom-prefix");
 
             Assert.Equal(
                 "https://localhost:5001/my-custom-prefix/hello.jpg",
@@ -67,10 +96,7 @@ namespace Bulletin.Tests
         [Fact]
         public void TestAbsoluteUrlWithCustomEmptyPrefix()
         {
-            var board = BulletinBoardFactory.InMemory("", bulletinBoardOptions: new BulletinBoardOptions
-            {
-                RoutePrefix = ""
-            });
+            var board = GetBoard("", "");
 
             Assert.Equal(
                 "https://localhost:5001/hello.jpg",
@@ -80,7 +106,7 @@ namespace Bulletin.Tests
         [Fact]
         public void TestAbsoluteUrlWithBoardName()
         {
-            var board = BulletinBoardFactory.InMemory("board-name");
+            var board = GetBoard("board-name");
 
             Assert.Equal(
                 "https://localhost:5001/bulletin-static/board-name/hello.jpg",
