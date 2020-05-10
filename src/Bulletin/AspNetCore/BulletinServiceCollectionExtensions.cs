@@ -9,15 +9,16 @@ namespace Bulletin.AspNetCore
     {
         public static IServiceCollection AddBulletin<TContext>(
             this IServiceCollection services,
-            Action<BulletinOptionsBuilder> optionsAction) where TContext : IBulletinDbContext
+            Action<BulletinOptionsBuilder> optionsAction) where TContext : DbContext, IBulletinDbContext
         {
             var optionsBuilder = new BulletinOptionsBuilder();
             optionsAction?.Invoke(optionsBuilder);
 
             var options = optionsBuilder.Create();
 
-            services.AddScoped<IBulletin>(sp => new Bulletin(
-                sp.GetRequiredService<IBulletinDbContext>(),
+            services.AddScoped<IBulletinDbContext>(sp => sp.GetService<TContext>());
+            services.AddScoped<IBulletin>(sp => new Bulletin<TContext>(
+                sp.GetRequiredService<TContext>(),
                 options
             ));
             return services;

@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Storage.Net;
@@ -18,9 +20,13 @@ namespace Bulletin.Storages
             _storage = StorageFactory.Blobs.DirectoryFiles(_options.Directory);
         }
 
-        IBlobStorage IStorage.GetBlobStorage()
+        public Task WriteAsync(
+            string fullPath,
+            Stream dataStream,
+            bool append = false,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            return _storage;
+            return _storage.WriteAsync(fullPath, dataStream, append, cancellationToken);
         }
 
         public IFileProvider GetFileProvider()

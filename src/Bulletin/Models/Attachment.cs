@@ -24,7 +24,7 @@ namespace Bulletin.Models
         public string ContentType { get; set; }
 
         [Required]
-        public string Filename { get; set; }
+        public string OriginalFilename { get; set; }
 
         [Required]
         public string Checksum { get; set; }

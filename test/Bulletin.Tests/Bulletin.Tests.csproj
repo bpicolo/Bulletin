@@ -21,4 +21,8 @@
       <ProjectReference Include="..\..\src\Bulletin\Bulletin.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <None Update="./resources/*" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>

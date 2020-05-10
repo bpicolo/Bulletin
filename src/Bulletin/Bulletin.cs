@@ -6,12 +6,12 @@ using Bulletin.Storages;
 
 namespace Bulletin
 {
-    public class Bulletin : IBulletin
+    public class Bulletin<TContext> : IBulletin where TContext : IBulletinDbContext
     {
         private readonly IBulletinDbContext _dbContext;
         private readonly BulletinOptions _options;
 
-        internal Bulletin(IBulletinDbContext dbContext, BulletinOptions options)
+        internal Bulletin(TContext dbContext, BulletinOptions options)
         {
             _options = options;
             _dbContext = dbContext;
