@@ -55,6 +55,14 @@ namespace Bulletin
             return attachment;
         }
 
+        public async Task DeleteAsync(Attachment attachment)
+        {
+            await _options.Storage.DeleteAsync(attachment.Location);
+            attachment.DeletedAt = DateTime.Now;
+            _dbContext.Update(attachment);
+            await _dbContext.SaveChangesAsync();
+        }
+
         private static string ShaSum(FileStream file)
         {
             StringBuilder sb = new StringBuilder();

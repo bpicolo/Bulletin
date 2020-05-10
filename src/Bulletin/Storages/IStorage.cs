@@ -14,6 +14,10 @@ namespace Bulletin.Storages
             string fullPath,
             Stream dataStream,
             bool append = false,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
+
+        public Task DeleteAsync(
+            string path,
+            CancellationToken cancellationToken = default);
     }
 }

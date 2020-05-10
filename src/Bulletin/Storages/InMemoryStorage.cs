@@ -28,5 +28,10 @@ namespace Bulletin.Storages
         {
             return _storage.WriteAsync(fullPath, dataStream, append, cancellationToken);
         }
+
+        public Task DeleteAsync(string path, CancellationToken cancellationToken = default)
+        {
+            return _storage.DeleteAsync(path, cancellationToken);
+        }
     }
 }

@@ -35,7 +35,8 @@ namespace Bulletin.Models
         [Required]
         public long SizeInBytes { get; set; }
 
-        public string Metadata { get; set; }
+        public DateTime? DeletedAt { get; set; } = null;
 
+        public string Metadata { get; set; }
     }
 }
