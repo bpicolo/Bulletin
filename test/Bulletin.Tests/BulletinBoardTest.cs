@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Bulletin.EFCore;
 using Bulletin.Models;
-using Bulletin.Storages;
+using Bulletin.Storage;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
@@ -29,11 +29,11 @@ namespace Bulletin.Tests
         public async Task AttachmentSavesBasicData()
         {
             var file = File.OpenRead("./resources/text.txt");
-            var board = GetBoard("board-name");
+            var board = GetBoard();
 
             var attachment = await board.AttachAsync(file);
 
-            Assert.Equal("board-name", attachment.Board);
+            Assert.Equal("test-board", attachment.Board);
             Assert.Equal("text/plain", attachment.ContentType);
             Assert.Equal("text.txt", attachment.OriginalFilename);
             Assert.IsType<DateTime>(attachment.CreatedAt);
@@ -45,7 +45,7 @@ namespace Bulletin.Tests
         public async Task AttachSavesToTheDatabase()
         {
             var file = File.OpenRead("./resources/text.txt");
-            var board = GetBoard("");
+            var board = GetBoard();
 
             var attachment = await board.AttachAsync(file);
 
@@ -57,7 +57,7 @@ namespace Bulletin.Tests
         public async Task AttachmentIsWrittenToStorage()
         {
             var file = File.OpenRead("./resources/text.txt");
-            var board = GetBoard("");
+            var board = GetBoard();
 
             var attachment = await board.AttachAsync(file);
 
@@ -72,7 +72,7 @@ namespace Bulletin.Tests
         public async Task AssertShaSumGeneratedForAttachment()
         {
             var file = File.OpenRead("./resources/text.txt");
-            var board = GetBoard("");
+            var board = GetBoard();
 
             var attachment = await board.AttachAsync(file);
 
@@ -82,71 +82,17 @@ namespace Bulletin.Tests
         }
 
         [Fact]
-        public void AbsoluteUrlsGeneratedWithDefaultPrefix()
+        public void UsesACustomUrlGeneratorIfProvided()
         {
-            var board = GetBoard("");
+            var generator = new Mock<IUrlGenerator>();
+            var attachment = AttachmentStub();
+            generator.Setup(g => g.AbsoluteUrlFor(attachment.Location)).Returns(
+                "http://test.localhost/path.jpg");
 
-            Assert.Equal(
-                "https://localhost:5001/bulletin-static/hello.jpg",
-                board.AbsoluteUrlFor(AttachmentStub()));
+            var board = GetBoard(o => o.UrlGenerator = generator.Object);
+
+            Assert.Equal("http://test.localhost/path.jpg", board.AbsoluteUrlFor(attachment));
         }
-
-        [Fact]
-        public void HttpsUrlDoesntIncludeDefaultPort() {
-            var board = GetBoard("", urlOptions: new UrlOptions
-            {
-                Scheme = "https",
-                Port = 443
-            });
-
-            Assert.Equal(
-                "https://localhost/bulletin-static/hello.jpg",
-                board.AbsoluteUrlFor(AttachmentStub()));
-        }
-
-        [Fact]
-        public void HttpUrlDoesntIncludeDefaultPort() {
-            var board = GetBoard("", urlOptions: new UrlOptions
-            {
-                Scheme = "http",
-                Port = 80
-            });
-
-            Assert.Equal(
-                "http://localhost/bulletin-static/hello.jpg",
-                board.AbsoluteUrlFor(AttachmentStub()));
-        }
-
-        [Fact]
-        public void AbsoluteUrlUsesCustomPrefix()
-        {
-            var board = GetBoard("", routePrefix: "my-custom-prefix");
-
-            Assert.Equal(
-                "https://localhost:5001/my-custom-prefix/hello.jpg",
-                board.AbsoluteUrlFor(AttachmentStub()));
-        }
-
-        [Fact]
-        public void AbsoluteUrlIgnoresEmptyPrefix()
-        {
-            var board = GetBoard("", "");
-
-            Assert.Equal(
-                "https://localhost:5001/hello.jpg",
-                board.AbsoluteUrlFor(AttachmentStub()));
-        }
-
-        [Fact]
-        public void AbsoluteUrlRendersBoardName()
-        {
-            var board = GetBoard("board-name");
-
-            Assert.Equal(
-                "https://localhost:5001/bulletin-static/board-name/hello.jpg",
-                board.AbsoluteUrlFor(AttachmentStub()));
-        }
-
 
         private Attachment AttachmentStub()
         {
@@ -156,21 +102,10 @@ namespace Bulletin.Tests
             };
         }
 
-        private BulletinBoard GetBoard(
-            string name,
-            string routePrefix = null,
-            UrlOptions urlOptions = null)
+        private BulletinBoard GetBoard(Action<BulletinBoardOptions> optionsAction = null)
         {
-            urlOptions ??= new UrlOptions();
-            _mockStorage.Setup(v => v.UrlOptions()).Returns(urlOptions);
-
-            var options = new BulletinBoardOptions(name, _mockStorage.Object);
-
-            if (routePrefix != null)
-            {
-                options.RoutePrefix = routePrefix;
-            }
-
+            var options = new BulletinBoardOptions("test-board", _mockStorage.Object);
+            optionsAction?.Invoke(options);
             return new BulletinBoard(_mockContext.Object, options);
         }
     }

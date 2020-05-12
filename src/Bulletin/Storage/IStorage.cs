@@ -1,15 +1,11 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.FileProviders;
-using Storage.Net.Blobs;
 
-namespace Bulletin.Storages
+namespace Bulletin.Storage
 {
     public interface IStorage
     {
-        public UrlOptions UrlOptions();
-
         public Task WriteAsync(
             string fullPath,
             Stream dataStream,
@@ -19,5 +15,7 @@ namespace Bulletin.Storages
         public Task DeleteAsync(
             string path,
             CancellationToken cancellationToken = default);
+
+        public IUrlGenerator DefaultUrlGenerator(UrlGenerationOptions options);
     }
 }
