@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Bulletin.Storages;
+using Bulletin.Storage;
 
 namespace Bulletin
 {

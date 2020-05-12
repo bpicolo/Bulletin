@@ -1,4 +1,4 @@
-namespace Bulletin.Storages
+namespace Bulletin.Storage.S3
 {
     public class S3StorageOptions
     {

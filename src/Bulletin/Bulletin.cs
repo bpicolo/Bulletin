@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Bulletin.EFCore;
 using Bulletin.Models;
-using Bulletin.Storages;
+using Bulletin.Storage;
 
 namespace Bulletin
 {
@@ -11,13 +12,13 @@ namespace Bulletin
         private readonly IBulletinDbContext _dbContext;
         private readonly BulletinOptions _options;
 
-        internal Bulletin(TContext dbContext, BulletinOptions options)
+        internal Bulletin([NotNull]TContext dbContext, [NotNull]BulletinOptions options)
         {
             _options = options;
             _dbContext = dbContext;
         }
 
-        public IBulletinBoard GetBoard(string name)
+        public IBulletinBoard GetBoard([NotNull]string name)
         {
             if (!_options.BulletinBoardOptions.ContainsKey(name))
             {
@@ -27,7 +28,7 @@ namespace Bulletin
             return new BulletinBoard(_dbContext, _options.BulletinBoardOptions[name]);
         }
 
-        public string AbsoluteUrlFor(Attachment attachment)
+        public string AbsoluteUrlFor([NotNull]Attachment attachment)
         {
             if (!_options.BulletinBoardOptions.ContainsKey(attachment.Board))
             {

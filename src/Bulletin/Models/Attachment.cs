@@ -1,12 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace Bulletin.Models
 {
-    [Table(name: "bulletin_attachments")]
     public class Attachment : IAttachment
     {
 
@@ -35,7 +33,8 @@ namespace Bulletin.Models
         [Required]
         public long SizeInBytes { get; set; }
 
-        public string Metadata { get; set; }
+        public DateTime? DeletedAt { get; set; } = null;
 
+        public string Metadata { get; set; }
     }
 }
