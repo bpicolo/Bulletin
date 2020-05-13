@@ -13,6 +13,33 @@ namespace Bulletin.Tests.Storage.InMemory
             ).AbsoluteUrlFor(location);
         }
 
+
+        [Fact]
+        public void PortIsDefaultedForHttps() {
+            var storage =  new InMemoryStorage(
+                new InMemoryStorageOptions
+                {
+                    Scheme = "https",
+                });
+
+            Assert.Equal(
+                "https://localhost/bulletin-static/boardname/hello.jpg",
+                GetDefaultUrl(storage, "hello.jpg"));
+        }
+
+        [Fact]
+        public void PortIsDefaultedForHttp() {
+            var storage =  new InMemoryStorage(
+                new InMemoryStorageOptions
+                {
+                    Scheme = "http",
+                });
+
+            Assert.Equal(
+                "http://localhost/bulletin-static/boardname/hello.jpg",
+                GetDefaultUrl(storage, "hello.jpg"));
+        }
+
         [Fact]
         public void UrlGeneratorHttpsUrlDoesntIncludeDefaultPort() {
             var storage = new InMemoryStorage(

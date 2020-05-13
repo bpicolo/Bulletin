@@ -26,7 +26,7 @@ namespace Bulletin.Storage.File
                 throw new NotImplementedException();
             }
 
-            return new LocalUrlGenerator(
+            return new PublicUrlGenerator(
                 _options.Scheme,
                 _options.Host,
                 _options.Port,

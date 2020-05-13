@@ -4,6 +4,6 @@ namespace Bulletin.Storage.InMemory
     {
         public string Scheme { get; set; } = "https";
         public string Host { get; set; } = "localhost";
-        public int Port { get; set; } = 5001;
+        public int Port { get; set; } = -1;
     }
 }

@@ -2,14 +2,14 @@ using System;
 
 namespace Bulletin.Storage
 {
-    internal class LocalUrlGenerator : IUrlGenerator
+    public class PublicUrlGenerator : IUrlGenerator
     {
         private readonly string _scheme;
         private readonly string _host;
         private readonly int _port;
         private readonly string _pathPrefix;
 
-        public LocalUrlGenerator(string scheme, string host, int port, string pathPrefix)
+        public PublicUrlGenerator(string scheme, string host, int port, string pathPrefix = null)
         {
             _scheme = scheme;
             _host = host;

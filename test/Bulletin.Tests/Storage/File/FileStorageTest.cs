@@ -15,6 +15,32 @@ namespace Bulletin.Tests.Storage.File
         }
 
         [Fact]
+        public void PortIsDefaultedForHttps() {
+            var storage = new FileStorage(
+                new FileStorageOptions("/tmp")
+                {
+                    Scheme = "https",
+                });
+
+            Assert.Equal(
+                "https://localhost/bulletin-static/boardname/hello.jpg",
+                GetDefaultUrl(storage, "hello.jpg"));
+        }
+
+        [Fact]
+        public void PortIsDefaultedForHttp() {
+            var storage = new FileStorage(
+                new FileStorageOptions("/tmp")
+                {
+                    Scheme = "http",
+                });
+
+            Assert.Equal(
+                "http://localhost/bulletin-static/boardname/hello.jpg",
+                GetDefaultUrl(storage, "hello.jpg"));
+        }
+
+        [Fact]
         public void UrlGeneratorHttpsUrlDoesntIncludeDefaultPort() {
             var storage = new FileStorage(
                 new FileStorageOptions("/tmp")

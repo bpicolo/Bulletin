@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Bulletin.EFCore;
 using Bulletin.Models;
 using Bulletin.Storage;
-using Bulletin.Storage.File;
 
 namespace Bulletin
 {
@@ -31,6 +30,10 @@ namespace Bulletin
 
         public async Task<Attachment> AttachAsync(string filename, Stream stream)
         {
+            var sum = ShaSum(stream);
+            var size = stream.Length;
+            stream.Seek(0, SeekOrigin.Begin);
+
             var ext = Path.GetExtension(filename);
             var mimetype = MimeMapping.MimeUtility.GetMimeMapping(ext);
 
@@ -43,9 +46,9 @@ namespace Bulletin
                 Location = destination,
                 ContentType = mimetype,
                 OriginalFilename = Path.GetFileName(filename),
-                Checksum = ShaSum(stream),
+                Checksum = sum,
                 CreatedAt = new DateTime(),
-                SizeInBytes = stream.Length,
+                SizeInBytes = size,
                 Metadata = null
             };
 
