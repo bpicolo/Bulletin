@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>Bulletin.Storage.S3</PackageId>
+        <Version>0.0.1</Version>
+        <Authors>bpicolo</Authors>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Bulletin\Bulletin.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Storage.Net.Amazon.Aws" Version="9.2.6" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Properties" />
+    </ItemGroup>
+</Project>

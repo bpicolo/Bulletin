@@ -7,7 +7,6 @@ namespace Bulletin
     public class BulletinBoardOptions
     {
         private string _pathPrefix = "";
-
         public IUrlGenerator UrlGenerator { get; set; } = null;
         public bool PresignedUrls { get; set; } = false;
         public int PresignedUrlExpires { get; set; } = 3600;

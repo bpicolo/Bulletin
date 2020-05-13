@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bulletin", "src\Bulletin\Bu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bulletin.Tests", "test\Bulletin.Tests\Bulletin.Tests.csproj", "{9DFF24CC-8F55-4C55-9993-66DD47DC5245}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bulletin.Storage.S3", "src\Bulletin.Storage.S3\Bulletin.Storage.S3.csproj", "{C42D58AB-EC0F-4AFC-9548-A523D1729AB1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{9DFF24CC-8F55-4C55-9993-66DD47DC5245}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DFF24CC-8F55-4C55-9993-66DD47DC5245}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DFF24CC-8F55-4C55-9993-66DD47DC5245}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C42D58AB-EC0F-4AFC-9548-A523D1729AB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C42D58AB-EC0F-4AFC-9548-A523D1729AB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C42D58AB-EC0F-4AFC-9548-A523D1729AB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C42D58AB-EC0F-4AFC-9548-A523D1729AB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
