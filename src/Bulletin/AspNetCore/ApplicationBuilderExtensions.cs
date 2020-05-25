@@ -7,18 +7,16 @@ namespace Bulletin.AspNetCore
 
         public static IApplicationBuilder UseBulletinBoardRoute(
             this IApplicationBuilder applicationBuilder,
-            IBulletinBoard store)
+            IBulletinBoard board)
         {
-            // var fileServerOptions = new FileServerOptions
-            // {
-            //     EnableDefaultFiles = false,
-            //     RequestPath = store.GetRoutePrefix(),
-            //     FileProvider = store.GetFileProvider()
-            // };
-            //
-            // return applicationBuilder.UseFileServer(fileServerOptions);
+            var fileServerOptions = new FileServerOptions
+            {
+                EnableDefaultFiles = false,
+                RequestPath = $"/bulletin-static/{board.GetName()}",
+                FileProvider = board.GetFileProvider()
+            };
 
-            return applicationBuilder;
+            return applicationBuilder.UseFileServer(fileServerOptions);
         }
     }
 }

@@ -19,6 +19,11 @@ namespace Bulletin.Storage.File
             _storage = StorageFactory.Blobs.DirectoryFiles(_options.Directory);
         }
 
+        public async Task<Stream> ReadAsync(string path, CancellationToken cancellationToken = default)
+        {
+            return await _storage.OpenReadAsync(path, cancellationToken);
+        }
+
         public IUrlGenerator DefaultUrlGenerator(UrlGenerationOptions options)
         {
             if (options.PresignedUrls)
@@ -49,7 +54,12 @@ namespace Bulletin.Storage.File
 
         public IFileProvider GetFileProvider()
         {
-            return new PhysicalFileProvider(_options.Directory);
+            var path = _options.Directory;
+            if (!Path.IsPathRooted(path))
+            {
+                path = Path.GetFullPath(path);
+            }
+            return new PhysicalFileProvider(path);
         }
     }
 }

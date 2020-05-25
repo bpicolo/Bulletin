@@ -8,8 +8,12 @@ namespace Bulletin
 {
     public interface IBulletinBoard
     {
+        public Task<Attachment> AttachAsync(string filename, Stream stream);
         public Task<Attachment> AttachAsync(FileStream file);
-        // public IFileProvider GetFileProvider();
+        public Task DeleteAsync(Attachment attachment);
+        public Task<Stream> DownloadAsync(Attachment attachment);
         public string AbsoluteUrlFor(Attachment attachment);
+        public string GetName();
+        public IFileProvider GetFileProvider();
     }
 }

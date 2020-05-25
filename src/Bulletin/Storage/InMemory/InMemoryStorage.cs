@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.FileProviders;
 using Storage.Net;
 using Storage.Net.Blobs;
 
@@ -32,6 +33,15 @@ namespace Bulletin.Storage.InMemory
                 $"bulletin-static/{options.BulletinBoardName}");
         }
 
+        public IFileProvider GetFileProvider()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Stream> ReadAsync(string path, CancellationToken cancellationToken = default)
+        {
+            return await _storage.OpenReadAsync(path, cancellationToken);
+        }
         public Task WriteAsync(
             string fullPath,
             Stream dataStream,

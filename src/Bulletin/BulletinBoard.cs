@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Bulletin.EFCore;
 using Bulletin.Models;
 using Bulletin.Storage;
+using Microsoft.Extensions.FileProviders;
 
 namespace Bulletin
 {
@@ -26,6 +27,16 @@ namespace Bulletin
         public string AbsoluteUrlFor(Attachment attachment)
         {
             return _urlGenerator.AbsoluteUrlFor(attachment.Location);
+        }
+
+        public string GetName()
+        {
+            return _options.Name;
+        }
+
+        public IFileProvider GetFileProvider()
+        {
+            return _options.Storage.GetFileProvider();
         }
 
         public async Task<Attachment> AttachAsync(string filename, Stream stream)
@@ -69,6 +80,11 @@ namespace Bulletin
             attachment.DeletedAt = DateTime.Now;
             _dbContext.Update(attachment);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<Stream> DownloadAsync(Attachment attachment)
+        {
+            return await _options.Storage.ReadAsync(attachment.Location);
         }
 
         private static string ShaSum(Stream data)

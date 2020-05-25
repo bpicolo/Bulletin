@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.FileProviders;
 using Storage.Net;
 using Storage.Net.Amazon.Aws.Blobs;
 using Storage.Net.Blobs;
@@ -37,6 +38,11 @@ namespace Bulletin.Storage.S3
             return _storage.DeleteAsync(path, cancellationToken);
         }
 
+        public async Task<Stream> ReadAsync(string path, CancellationToken cancellationToken = default)
+        {
+            return await _storage.OpenReadAsync(path, cancellationToken);
+        }
+
         public IUrlGenerator DefaultUrlGenerator(UrlGenerationOptions options)
         {
             if (options.PresignedUrls)
@@ -59,6 +65,11 @@ namespace Bulletin.Storage.S3
                 "https",
                 $"{_options.BucketName}{S3_HOST_BASE}",
                 -1);
+        }
+
+        public IFileProvider GetFileProvider()
+        {
+            throw new NotImplementedException();
         }
     }
 }
