@@ -1,6 +1,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.FileProviders;
 
 namespace Bulletin.Storage
 {
@@ -16,6 +17,11 @@ namespace Bulletin.Storage
             string path,
             CancellationToken cancellationToken = default);
 
+        public Task<Stream> ReadAsync(
+            string path,
+            CancellationToken cancellationToken = default);
+
         public IUrlGenerator DefaultUrlGenerator(UrlGenerationOptions options);
+        public IFileProvider GetFileProvider();
     }
 }
